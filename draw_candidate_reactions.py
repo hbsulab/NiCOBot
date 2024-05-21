@@ -1,4 +1,4 @@
-import cv2
+# import cv2
 import subprocess
 import numpy as np
 from rxnmapper import RXNMapper
