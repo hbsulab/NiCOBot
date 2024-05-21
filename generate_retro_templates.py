@@ -40,7 +40,7 @@ from numpy.random import shuffle # for random selection
 import rdkit.Chem as Chem          # molecule building
 from rdkit.Chem import AllChem
 from collections import defaultdict
-import rdkit.Chem.Draw as Draw
+# import rdkit.Chem.Draw as Draw
 from rdkit import RDLogger
 import datetime # for info files
 import json # for dumping
