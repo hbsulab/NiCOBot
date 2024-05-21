@@ -14,6 +14,23 @@ from NiCOBot.tools import *
 os.environ['OPENAI_API_BASE'] = 'https://api.openai.com/v1'
 ss = st.session_state
 
+
+
+@st.cache_resource
+def LLM_chain_response():
+
+    memory = ConversationBufferWindowMemory(k=5, memory_key="chat_history")
+    # memory = ConversationBufferMemory(memory_key="chat_history")
+    agent = NiCOBot(
+        # tools,
+        model="gpt-4-turbo",
+        openai_api_key=ss.get("api_key"),
+        temp=0.1,
+        memory=memory,
+    ).agent_executor
+
+    return agent
+
 tools = [   agents.load_tools(['wikipedia'])[0],
             PythonREPLTool(),
             ControlChemCheck(),
@@ -30,21 +47,6 @@ tools = [   agents.load_tools(['wikipedia'])[0],
             TableExtractor(),
             JSON2SMILES(),
         ]
-
-@st.cache_resource
-def LLM_chain_response():
-
-    memory = ConversationBufferWindowMemory(k=5, memory_key="chat_history")
-    # memory = ConversationBufferMemory(memory_key="chat_history")
-    agent = NiCOBot(
-        # tools,
-        model="gpt-4-turbo",
-        openai_api_key=ss.get("api_key"),
-        temp=0.1,
-        memory=memory,
-    ).agent_executor
-
-    return agent
 
 
 tool_list = pd.Series(
