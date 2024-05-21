@@ -6,7 +6,7 @@ from rdkit.Chem import AllChem
 from rdkit.Chem import DataStructs
 from generate_retro_templates import process_an_example
 from generate_product_by_connect_E_Nu import *
-from draw_candidate_reactions import *
+# from draw_candidate_reactions import *
 
 def format_conditions(condition_str):
     # conditions_list = condition_str.split('.')
