@@ -39,6 +39,7 @@ def LLM_chain_response():
     agent = NiCOBot(
         # tools,
         model="gpt-4-turbo",
+        openai_api_key=ss.get("api_key"),
         temp=0.1,
         memory=memory,
     ).agent_executor
