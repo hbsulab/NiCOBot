@@ -1,5 +1,6 @@
 import ast
 import pandas as pd
+import os
 from scipy import spatial
 
 from langchain.tools import BaseTool
@@ -54,7 +55,8 @@ class Query2ReactionsEmbedding(BaseTool):
     def __init__(self, top_n: int = 3):
         super().__init__()
         self.data = pd.read_csv('data/data_all_publish_info_with_descriptions_json_and_embeddings.csv')
-        self.client = OpenAIEmbeddings(model="text-embedding-ada-002")
+        self.openai_api_key = os.getenv("OPENAI_API_KEY")
+        self.client = OpenAIEmbeddings(model="text-embedding-ada-002", openai_api_key=self.openai_api_key)
         self.top_n = top_n
 
     @staticmethod
@@ -98,9 +100,10 @@ class Query2CSV(BaseTool):
     def __init__(self):
         super().__init__()
         self.data_path = 'data/data_all_publish_info_with_iupac_names.csv'
+        self.openai_api_key = os.getenv("OPENAI_API_KEY")
         self.client = create_csv_agent(ChatOpenAI(temperature=0, 
                                                   model="gpt-4-0613", 
-                                                  openai_api_key="XXXXXX"),
+                                                  openai_api_key=self.openai_api_key),
                                                   self.data_path, 
                                                   verbose=True,
                                                   handle_parsing_errors=True)
@@ -126,9 +129,10 @@ class Query2Dataframe(BaseTool):
     def __init__(self):
         super().__init__()
         self.df = pd.read_csv('data/data_all_publish_info_with_iupac_names_C-O_strength.csv')
+        self.openai_api_key = os.getenv("OPENAI_API_KEY")
         self.client = create_pandas_dataframe_agent(ChatOpenAI( temperature=0.1, 
                                                                 model="gpt-4-0125-preview", 
-                                                                openai_api_key="XXXXXX"),
+                                                                openai_api_key=self.openai_api_key),
                                                                 self.df, 
                                                                 verbose=True,
                                                                 handle_parsing_errors=True,

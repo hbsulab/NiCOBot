@@ -51,7 +51,6 @@ class NiCOBot:
         openai_api_key: Optional[str] = None,
         api_keys: dict = {},
     ):
-        """Initialize ChemCrow agent."""
 
         load_dotenv()
         try:
