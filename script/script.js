@@ -23,8 +23,8 @@ svg.append('defs').append('marker')
 
 // 加载数据
 Promise.all([
-    d3.csv('data.csv'),
-    d3.csv('links.csv')]).then(files => {
+    d3.csv('data/citation-network-nodes.csv'),
+    d3.csv('data/citation-network-edges.csv')]).then(files => {
 
     const nodes = files[0];
     const links = files[1];
