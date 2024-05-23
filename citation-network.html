@@ -3,11 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Data Visualization</title>
+    <title>Citation Network</title>
+    <link rel="icon" href="images/citation-network.png" type="image/x-icon">
     <style>
         body {
             display: flex;
-            justify-content: center;
+            justify-content: flex-start;
             align-items: center;
             height: 100vh;
             margin: 0;
@@ -16,12 +17,85 @@
         svg {
             border: 1px solid black;
         }
+        #info {
+            width: 20%;
+            height: 100%;
+            float: right;
+            background-color: white; 
+            border: 1px solid #ccc; 
+            padding: 10px; 
+            display: none;
+            overflow-y: auto;
+            color: #333; /* 默认字体颜色 */
+            font-size: 14px; /* 默认字体大小 */
+        }
+        #info div {
+            margin-bottom: 10px;
+        }
+        #title {
+            font-size: 14px; /* 较大字体大小 */
+            font-weight: bold; /* 字体加粗 */
+        }
+        #title a {
+            color: inherit; /* 链接颜色继承 */
+            text-decoration: none; /* 无下划线 */
+        }
+        #authors, #publication, #citations {
+            font-size: 12px; /* 较小字体大小 */
+            color: #888; /* 灰色字体 */
+        }
+        #info-list {
+            background-color: #f9f9f9;
+            padding: 10px;
+            border-right: 1px solid #ccc;
+            width: 20%;
+            height: 100%;
+            overflow-y: scroll;
+            float: left;
+        }
+        #info-list .item-title {
+            font-size: 14px; /* 设置标题的字体大小 */
+        }
+
+        #info-list .item-authors,
+        #info-list .item-year {
+            font-size: 12px; /* 设置作者和年份的字体大小 */
+            color: #888; /* 设置字体颜色 */
+        }
+        .info-item {
+            margin: 5px;
+            padding: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .highlight {
+            stroke: red; /* 或者其他更明显的样式 */
+            stroke-width: 3px;
+        }
+
     </style>
 </head>
 <body>
     <!-- 主体内容留空，SVG将通过JavaScript创建 -->
 
+    <div id="info-list"></div>
+
     <script src="https://d3js.org/d3.v7.min.js"></script>
+    <script src="https://unpkg.com/@rdkit/rdkit/dist/RDKit_minimal.js"></script>
     <script src="script/script.js"></script>
+
+    <!-- 信息显示面板 -->
+    <div id="info">
+        <div id="title"><a href="#" id="titleLink">Title</a></div>
+        <div id="authors"></div>
+        <div id="publication">
+            <span id="year">Year: </span>, <span id="journal">Journal: </span>
+        </div>
+        <div id="citations"></div>
+        <div id="reaction"></div>
+        <div id="abstract"></div>
+    </div>
+
+
 </body>
 </html>

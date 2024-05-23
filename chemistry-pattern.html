@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chemistry Pattern</title>
+    <link rel="icon" href="images/chemistry-pattern.png" type="image/x-icon">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            overflow: hidden; /* 防止页面出现滚动条 */
+        }
+        .container {
+            width: 100%;
+            height: 100%;
+            display: flex;
+        }
+        .half {
+            width: 50%;
+            height: 100%;
+            position: relative;
+        }
+        .title {
+            position: absolute;
+            width: 100%;
+            height: 65px;
+            display: flex;
+            align-items: center; /* Flexbox 属性，确保子元素在垂直方向上居中 */
+            justify-content: center; /* Flexbox 属性，确保子元素在水平方向上居中 */
+            background-color: #f8f8f8; /* 浅灰色背景 */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* 添加阴影以提升层次感 */
+            z-index: 10; /* 确保标题在其他内容之上 */
+        }
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="half">
+            <div class="title">Clustering of phosphine and NHC ligands with electrophiles</div>
+            <iframe src="E_L.html"></iframe>
+        </div>
+        <div class="half">
+            <div class="title">Clustering of phosphine and NHC ligands with nucleophiles</div>
+            <iframe src="Nu_L.html"></iframe>
+        </div>
+    </div>
+</body>
+</html>

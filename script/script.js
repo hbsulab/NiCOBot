@@ -1,12 +1,63 @@
 // 设置SVG画布的尺寸
-const width = 800;
-const height = 600;
+const bodyWidth = document.body.clientWidth;
+const bodyHeight = document.body.clientHeight;
+const width = bodyWidth*0.6;
+const height = bodyHeight;
 const margin = { top: 40, right: 50, bottom: 40, left: 40 };  // 增加边距定义
 
 // 创建SVG元素
 const svg = d3.select('body').append('svg')
     .attr('width', width)
     .attr('height', height);
+
+// 初始化 RDKit 模块并设置全局变量
+window.initRDKitModule().then(RDKit => {
+    window.RDKit = RDKit;
+    console.log('RDKit module initialized successfully.');
+}).catch(error => {
+    console.error('Failed to initialize RDKit module:', error);
+});
+
+function convertSMILESToImage(smiles) {
+    // 确保 RDKit 模块已经加载
+    if (!window.RDKit) {
+        console.error('RDKit module is not initialized.');
+        return null;
+    }
+
+    let svgString;  // 定义 svgString 变量在函数作用域
+
+    try {
+        // 检测输入是否为反应（包含 ">>"）
+        if (smiles.includes('>>')) {
+            // 处理化学反应
+            const rxn = window.RDKit.get_rxn(smiles);
+            if (!rxn) {
+                console.error('Failed to parse reaction SMILES.');
+                return null;
+            }
+            svgString = rxn.get_svg();
+            rxn.delete();  // 清理内存
+        } else {
+            // 处理单个分子
+            const mol = window.RDKit.Mol.fromSmiles(smiles);
+            if (!mol) {
+                console.error('Failed to parse SMILES string.');
+                return null;
+            }
+            svgString = mol.get_svg();
+            mol.delete();  // 清理内存
+        }
+
+        // 将 SVG 字符串转换为 DOM 元素
+        const parser = new DOMParser();
+        const svgDoc = parser.parseFromString(svgString, 'image/svg+xml');
+        return svgDoc.documentElement;
+    } catch (error) {
+        console.error('Error converting SMILES to SVG:', error);
+        return null;
+    }
+}
 
 svg.append('defs').append('marker')
     .attr('id', 'arrowhead')
@@ -23,7 +74,7 @@ svg.append('defs').append('marker')
 
 // 加载数据
 Promise.all([
-    d3.csv('data/citation-network-nodes.csv'),
+    d3.csv('data/citation-network-nodes-all.csv'),
     d3.csv('data/citation-network-edges.csv')]).then(files => {
 
     const nodes = files[0];
@@ -68,11 +119,37 @@ Promise.all([
         .data(nodes)
         .enter().append('path')
         .classed('dot', true)
+        .attr("id", d => `graph-element-${d.ID}`)  // 确保图形元素的ID与数据ID相对应
         .attr('transform', d => `translate(${xScale(d.X)}, ${yScale(d.Y)})`)
         .attr('d', d => d3.symbol()
         .size(d.local_citation ? sizeScale(d.local_citation) ** 2 : 100)
         .type(shapeScale(d['Reaction Type']))())
-        .style('fill', d => colorScale(d.Strength));  // 使用颜色比例尺设置填充颜色
+        .style('fill', d => colorScale(d.Strength))  // 使用颜色比例尺设置填充颜色
+        .on('mouseover', function(event, d) {
+            // 显示信息面板
+            d3.select('#info').style('display', 'block');
+            // 填充信息
+                    // 更新标题链接
+            d3.select('#titleLink')
+                .text(d.Title) // 设置链接文本
+                .attr('href', 'http://doi.org/' + d.name) // 设置链接地址
+                .attr('target', '_blank'); // 设置在新窗口打开链接
+
+            d3.select('#authors').text(d.Authors);
+            d3.select('#year').text(d.publication_year);
+            d3.select('#journal').text(d.Journal_Title);
+            d3.select('#citations').text('Local Citations: ' + d.local_citation_up);
+
+                // 将 SMILES 转换为化学反应图像
+            const reactionImage = convertSMILESToImage(d.Reaction); // 假设这是您的函数
+            reactionImage.setAttribute("width", bodyWidth*0.19);
+            reactionImage.setAttribute("height", "150px");
+            reactionImage.setAttribute("viewBox", "0 0 800 200")
+            d3.select('#reaction').html(''); // 清空原本的文本
+            d3.select('#reaction').node().appendChild(reactionImage); // 添加图像
+
+            d3.select('#abstract').text(d.Abstract);
+        });
 
     svg.selectAll('.label')
         .data(nodes)
@@ -123,6 +200,26 @@ Promise.all([
         .style("font-size", "12px")
         .attr("alignment-baseline", "middle");
     });
+
+    const infoList = d3.select("#info-list");
+    infoList.selectAll("div")
+            .data(nodes)
+            .enter()
+            .append("div")
+            .attr("class", "info-item")
+            .attr("data-id", d => d.ID) 
+            .html(d => `<span class="item-title">${d.Title}</span> - <span class="item-authors">${d.Authors}</span> <span class="item-year">${d.publication_year}</span>`);
+
+
+    infoList.selectAll(".info-item")
+            .on("click", function(event, d) {
+                // 清除之前的高亮
+                d3.selectAll(".highlight").classed("highlight", false);
+        
+                // 高亮对应的图形元素
+                const id = d.ID;
+                d3.select(`#graph-element-${id}`).classed("highlight", true);  // 假设图形元素有特定的ID
+            });
 
 }).catch(e => {
     console.error('Error loading the data: ', e);
