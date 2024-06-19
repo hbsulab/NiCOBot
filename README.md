@@ -1,1 +1,1 @@
-# NiCOBot-Test
+# NiCOBot
